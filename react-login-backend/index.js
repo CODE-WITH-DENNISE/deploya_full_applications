@@ -3,11 +3,14 @@ require('dotenv').config({ path: './ls.env' });
 const express = require('express');
 const { Pool } = require('pg');
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
+const cors = require('cors');
 
 // Initialize the Express application
 const app = express();
 
-// Middleware to parse JSON requests
+// Middleware
+app.use(cors());
 app.use(express.json());
 
 // PostgreSQL pool configuration using environment variables
@@ -31,7 +34,7 @@ pool.connect()
 
 // User registration route
 app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, email } = req.body;
 
     try {
         // Check if the user already exists
@@ -40,8 +43,11 @@ app.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'User already exists' });
         }
 
-        // Save the new user in the database with the plain-text password
-        await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', [username, password]);
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Save the new user in the database with the hashed password
+        await pool.query('INSERT INTO users (username, password, email) VALUES ($1, $2, $3)', [username, hashedPassword, email]);
 
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
@@ -57,6 +63,7 @@ app.post('/login', async (req, res) => {
     try {
         // Query to find the user by username
         const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        console.log('User query result:', result.rows); // Log user query result for debugging
 
         if (result.rows.length === 0) {
             return res.status(400).json({ message: 'User not found' });
@@ -64,8 +71,9 @@ app.post('/login', async (req, res) => {
 
         const user = result.rows[0];
 
-        // Directly compare the provided password with the stored plain-text password
-        if (user.password !== password) {
+        // Compare the provided password with the stored hashed password
+        const match = await bcrypt.compare(password, user.password);
+        if (!match) {
             return res.status(401).json({ message: 'Invalid password' });
         }
 
@@ -80,6 +88,12 @@ app.post('/login', async (req, res) => {
         console.error('Error in login route:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
+});
+
+// Graceful shutdown
+process.on('SIGINT', async () => {
+    await pool.end(); // Close the pool
+    process.exit();
 });
 
 // Start the server
