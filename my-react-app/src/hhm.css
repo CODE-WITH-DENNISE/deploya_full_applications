@@ -1,0 +1,61 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f4f7;
+  }
+  
+  /* Navbar Styling */
+  .navbar {
+    background-color: #007BFF;
+    color: white;
+    padding: 15px;
+    text-align: center;
+  }
+  
+  .navbar a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: bold;
+  }
+  
+  /* Dashboard Grid Layout */
+  .dashboard {
+    display: flex;
+    justify-content: space-around;
+    margin: 30px;
+  }
+  
+  /* Dashboard Div Styling */
+  .dashboard-item {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    width: 30%;
+  }
+  
+  .dashboard-item h3 {
+    color: #007BFF;
+    text-align: center;
+  }
+  
+  .dashboard-item p {
+    text-align: justify;
+  }
+  
+  /* Responsive Layout */
+  @media (max-width: 768px) {
+    .dashboard {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .dashboard-item {
+      width: 80%;
+      margin-bottom: 20px;
+    }
+  }
+  
