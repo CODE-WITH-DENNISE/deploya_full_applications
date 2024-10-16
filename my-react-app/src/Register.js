@@ -102,7 +102,7 @@ const Register = () => {
                 {/* Link to switch to login */}
                 <p style={{ marginTop: '20px', textAlign: 'center', color: '#fff' }}>
                     Already have an account?{' '}
-                    <Link to="/loginform" style={{ color: '#23a2f6', textDecoration: 'none' }}>
+                    <Link to="/" style={{ color: '#23a2f6', textDecoration: 'none' }}>
                         Login here
                     </Link>
                 </p>
